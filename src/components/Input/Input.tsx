@@ -1,15 +1,19 @@
 import React from "react";
 import { inputProps } from "./Input.types";
 
-const Input: React.FC<inputProps> = ({ ...props }) => {
+const Input: React.FC<inputProps> = ({ label, ...props }) => {
   return (
     <label
-      className={`absolute left-5 text-gray-400 transition-all duration-300 pointer-events-none  has-[:focus-visible]:text-xs has-[:focus-visible]:bg-main has-[:focus-visible]:px-1 has-[:focus-visible]:top-3`}
+      className={
+        "group relative text-gray-400 transition-all duration-300 mb-4"
+      }
     >
-      <p>{props.label}</p>
+      <p className="absolute top-1/2 -translate-y-1/2 group-has-[:focus-within]:scale-75 z-20 group-has-[:focus-within]:bg-main  group-has-[:focus-within]:-top-16 group-has-[:focus-within]:-left-1 group-has-[:focus-within]:px-1 left-3 pointer-events-none transition-all duration-300">
+        {label}
+      </p>
       <input
-        className="bg-main hover:scale-98 px-5 py-3 text-base rounded-lg border transition-all border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-focus outline-none w-full"
-        type="text"
+        {...props}
+        className="bg-main hover:scale-98 px-5 py-3 text-base z-10 rounded-lg border transition-all border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-focus w-full outline-none"
       />
     </label>
   );

@@ -1,15 +1,13 @@
-import "./App.css";
-import { Routes, Route } from "react-router-dom";
-import Connect from "./Connect";
+// App.tsx
+import React from "react";
 
-function App() {
+const App: React.FC = () => {
   return (
-    <>
-      <Routes>
-        <Route path="/connect" element={<Connect />} />
-      </Routes>
-    </>
+    <div>
+      <h1>Bienvenue dans l'application</h1>
+      <p>Ceci est la page principale.</p>
+    </div>
   );
-}
+};
 
 export default App;
