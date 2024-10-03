@@ -1,5 +1,8 @@
 import React from "react";
 
-interface registerProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface registerProps {
+  isRegister: boolean;
+  setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 export type { registerProps };
