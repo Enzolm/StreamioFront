@@ -5,6 +5,8 @@ import { LucideUser } from "lucide-react";
 import { Button, Input, Register } from "@components/index";
 import { Link } from "react-router-dom";
 export default function Connect() {
+  console.log("caca");
+
   const [isRegister, setIsRegister] = useState(false);
 
   const [prenom, setPrenom] = useState("");
