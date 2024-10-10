@@ -1,21 +1,22 @@
-import { useState } from 'react';
-import logo from '../../assets/logo.png';
-import { AnimatePresence, motion as m } from 'framer-motion';
-import { LucideUser } from 'lucide-react';
-import { Button, Input, Register } from '@components/index';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import logo from "../../assets/logo.png";
+import { AnimatePresence, motion as m } from "framer-motion";
+import { LucideUser } from "lucide-react";
+import { Button, Input, Register } from "@components/index";
+import { Link } from "react-router-dom";
 export default function Connect() {
   const [isRegister, setIsRegister] = useState(false);
 
-  const [prenom, setPrenom] = useState('');
-  const [nom, setNom] = useState('');
-  const [ville, setVille] = useState('');
-  const [codePostal, setCodePostal] = useState('');
-  const [email, setEmail] = useState('');
-  const [motdepasse, setMotdepasse] = useState('');
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [ville, setVille] = useState("");
+  const [codePostal, setCodePostal] = useState("");
+  const [email, setEmail] = useState("");
+  const [motdepasse, setMotdepasse] = useState("");
+  const [motdepasseConfirm, setMotdepasseConfirm] = useState("");
 
-  if (motdepasse !== motdepasse) {
-    alert('Passwords do not match');
+  if (motdepasse !== motdepasseConfirm) {
+    alert("Passwords do not match");
   }
 
   const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,20 +33,20 @@ export default function Connect() {
 
     console.log(user);
 
-    fetch('http://localhost:3000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user }),
     })
       .then((response) => response.text())
       .then((data) => {
         console.log(data);
-        alert('User added successfully');
-        setPrenom('');
-        setNom('');
-        setVille('');
-        setEmail('');
-        setMotdepasse('');
+        alert("User added successfully");
+        setPrenom("");
+        setNom("");
+        setVille("");
+        setEmail("");
+        setMotdepasse("");
       });
   };
 
@@ -53,7 +54,7 @@ export default function Connect() {
     <>
       <form
         className={`rounded-[37px] bg-main shadow-connect flex flex-col transition-all duration-700 items-center p-6 overflow-hidden ${
-          isRegister ? 'h-[365px] w-[287px]' : 'h-[565px] w-[565px]'
+          isRegister ? "h-[365px] w-[287px]" : "h-[565px] w-[565px]"
         }`}
         onSubmit={handleRegister}
       >
@@ -117,6 +118,8 @@ export default function Connect() {
                 label="Confirmez votre mot de passe"
                 type="password"
                 className="col-span-2"
+                value={motdepasseConfirm}
+                onChange={(e) => setMotdepasseConfirm(e.target.value)}
               />
               <Button
                 label="Se connecter"

@@ -7,7 +7,7 @@ export default {
         0.2: "0.050rem",
       },
       spacing: {
-        16: "1.6%",
+        16: "-1.6%",
       },
       colors: {
         main: "#197277",
