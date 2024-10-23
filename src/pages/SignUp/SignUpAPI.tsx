@@ -1,6 +1,6 @@
 import axios from "axios";
 
-async function CallLoginApi(data: any) {
+async function CallSignUpAPI(data: any) {
   console.log(data);
   try {
     const response = await axios.post("http://localhost:3000/signup", data);
@@ -23,6 +23,6 @@ async function CallLoginApi(data: any) {
     throw error;
   }
 }
-console.log("CallLoginApi", CallLoginApi);
+console.log("CallSignUpAPI", CallSignUpAPI);
 
-export default CallLoginApi;
+export default CallSignUpAPI;
