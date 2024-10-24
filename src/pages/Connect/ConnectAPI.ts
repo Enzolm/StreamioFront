@@ -1,7 +1,7 @@
 import axios from "axios";
 
 async function CallLoginApi(data: any) {
-  console.log(data);
+  console.log("Données envoyées:", data);
   try {
     const response = await axios.post("http://localhost:3000/signup", data);
     console.log("Utilisateur créé avec succès:", response.data);
@@ -23,6 +23,5 @@ async function CallLoginApi(data: any) {
     throw error;
   }
 }
-console.log("CallLoginApi", CallLoginApi);
 
 export default CallLoginApi;

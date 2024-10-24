@@ -16,13 +16,20 @@ export default function SignUp() {
     formState: { errors },
   } = useForm();
   const onSubmit = (data: any) => {
-    if (true) {
-      try {
-        CallSignUpAPI(data);
-      } catch (error) {
-        const err = error as Error;
-        setError("root", { message: "erreur", type: "custom" });
-      }
+    if (data.motdepasse !== data.motdepasseConfirm) {
+      setError("motdepasseConfirm", {
+        message: "Les mots de passe ne correspondent pas",
+      });
+      return;
+    }
+
+    try {
+      CallSignUpAPI(data);
+    } catch (error) {
+      const err = error as Error;
+      setError("root", {
+        message: "Une erreur est survenue lors de l'inscription",
+      });
     }
   };
 
