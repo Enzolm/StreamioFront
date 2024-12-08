@@ -1,10 +1,13 @@
+import verifyToken from "../../providers/VerifToken";
 import axios from "axios";
 
 async function CallLoginApi(data: any) {
   console.log(data);
   try {
     const response = await axios.post("http://localhost:3000/login", data);
-    console.log("Utilisateur connecté avec succès:", response.data);
+    console.log("Utilisateur connecté avec succès:", response.data.token);
+    localStorage.setItem("token", response.data.token);
+    verifyToken();
     return response.data;
   } catch (error: any) {
     if (error.response) {

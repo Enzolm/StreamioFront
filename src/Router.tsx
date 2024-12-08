@@ -1,3 +1,4 @@
+import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Connect from "./pages/Connect/Connect";
 import SignUp from "./pages/SignUp/SignUp";

@@ -86,15 +86,9 @@ export default function SignUp() {
               type="password"
               className="col-span-2"
             />
-            <a
-              className=" text-slate-400"
-              href="/login
-            "
-            >
-              Créer un compte
-            </a>
             <Button label="Se connecter" type="submit" className="col-span-2" />
           </div>
+          <div className="w-full my-5 h-0.2 bg-gray-400 "></div>
         </m.div>
 
         <Register

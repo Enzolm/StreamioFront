@@ -1,0 +1,10 @@
+.loginsignup {
+  display: flex;
+  justify-content: flex-start;
+  position: relative;
+  height: auto;
+}
+
+.loginsignup[data-isSignup="true"] {
+  justify-content: flex-end;
+}
