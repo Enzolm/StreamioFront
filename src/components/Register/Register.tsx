@@ -1,12 +1,22 @@
 import React from "react";
 import { registerProps } from "./Register.types";
 import { motion as m } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import { isGeneratorFunction } from "util/types";
+
 const Register: React.FC<registerProps> = ({
   className,
   isRegister,
   setIsRegister,
 }) => {
+  const navigate = useNavigate();
+
+  const RedirectSignUp = () => {
+    navigate("/signup");
+  };
+  const RedirectLogin = () => {
+    navigate("/login");
+  };
   return (
     <>
       <div className={`flex justify-center w-full relative bg ${className}`}>
@@ -20,6 +30,7 @@ const Register: React.FC<registerProps> = ({
           onClick={(e) => {
             e.preventDefault();
             setIsRegister(!isRegister);
+            RedirectLogin();
           }}
           className={`bg-transparent border z-10 border-gray-300 rounded-l-lg w-1/2 relative ${
             isRegister ? "text-main" : ""
@@ -31,6 +42,7 @@ const Register: React.FC<registerProps> = ({
           onClick={(e) => {
             e.preventDefault();
             setIsRegister(!isRegister);
+            RedirectSignUp();
           }}
           className={`bg-transparent border border-gray-300 rounded-r-lg w-1/2 z-10 ${
             isRegister ? "" : "text-main"

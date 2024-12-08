@@ -9,6 +9,8 @@ import CallSignUpAPI from "./SignUpAPI";
 export default function SignUp() {
   const [isRegister, setIsRegister] = useState(false);
 
+  console.log("isRegister", isRegister);
+  console.log("setIsRegister", setIsRegister);
   const {
     register,
     handleSubmit,
@@ -24,6 +26,7 @@ export default function SignUp() {
     }
 
     try {
+      console.log("data", data), data.motdepasse;
       CallSignUpAPI(data);
     } catch (error) {
       const err = error as Error;
@@ -79,7 +82,7 @@ export default function SignUp() {
             />
             <Input
               label="Confirmez votre mot de passe"
-              name="motdepasseConfirm"
+              {...register("motdepasseConfirm")}
               type="password"
               className="col-span-2"
             />
@@ -92,9 +95,14 @@ export default function SignUp() {
             </a>
             <Button label="Se connecter" type="submit" className="col-span-2" />
           </div>
-
-          {errors.root && <p className="text-red-500">{errors.root.message}</p>}
         </m.div>
+
+        <Register
+          isRegister={isRegister}
+          setIsRegister={setIsRegister}
+          className=""
+        />
+        {errors.root && <p className="text-red-500">{errors.root.message}</p>}
       </form>
     </>
   );
