@@ -20,15 +20,20 @@ export default async function verifyToken(): Promise<boolean> {
       }
     );
 
-    console.log("Token is valid:", response.data);
-    return true;
+    const isAdmin = response.data.isAdmin;
+
+    console.log(response.data);
+
+    if (isAdmin) {
+      console.log("Token is valid and user is admin");
+      return true;
+    } else {
+      console.log("Token is valid but user is not admin");
+      return false;
+    }
   } catch (error: any) {
     if (error.response) {
-      console.error(
-        "Error verifying token:",
-        error.response.status,
-        error.response.data
-      );
+      console.error("Error verifying token:", error.response.status, error.response.data);
     } else {
       console.error("Error verifying token:", error.message);
     }
