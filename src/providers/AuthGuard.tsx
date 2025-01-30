@@ -16,7 +16,7 @@ const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (!res) {
     console.log("User is not logged in");
-    return <Navigate to="/hh" />;
+    return <Navigate to="/" />;
   } else {
     return <>{children}</>;
   }

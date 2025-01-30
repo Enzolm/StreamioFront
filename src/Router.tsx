@@ -11,11 +11,7 @@ import AuthGuard from "./providers/AuthGuard";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <AuthGuard>
-        <Home />
-      </AuthGuard>
-    ),
+    element: <Home />,
   },
   {
     path: "/login",
@@ -23,11 +19,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: (
-      <AuthGuard>
-        <SignUp />
-      </AuthGuard>
-    ),
+    element: <SignUp />,
   },
   {
     path: "/service",
@@ -36,7 +28,11 @@ const router = createBrowserRouter([
 
   {
     path: "/admin/create/service",
-    element: <AdminService />,
+    element: (
+      <AuthGuard>
+        <AdminService />
+      </AuthGuard>
+    ),
   },
 ]);
 
