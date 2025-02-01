@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 const Service = () => {
-  const [services, setServices] = useState<any[]>([]);
-  const [orderBy, setOrderBy] = useState<string>("");
+  interface ServiceType {
+    id: number;
+    Nom: string;
+    categorie: string;
+    description: string;
+    Photo?: string;
+  }
+
+  const [services, setServices] = useState<ServiceType[]>([]);
+  const [orderBy, setOrderBy] = useState("");
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/get/services?orderBy=${orderBy}`
-        );
+        const response = await fetch(`http://localhost:3000/get/services?orderBy=${orderBy}`);
         const data = await response.json();
         setServices(data);
       } catch (error) {
@@ -18,47 +25,92 @@ const Service = () => {
     };
 
     fetchServices();
-  }, [orderBy]); // Rechercher à chaque fois que orderBy change
+  }, [orderBy]);
 
-  const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOrderBy(e.target.value);
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+      },
+    },
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-4">
-        <label htmlFor="orderBy" className="block text-lg font-medium">
-          Trier par
-        </label>
-        <select
-          id="orderBy"
-          className="select select-bordered w-full max-w-xs"
-          onChange={handleOrderChange}
-        >
-          <option value="">Sélectionner un tri</option>
-          <option value="nom ASC">Nom (Croissant)</option>
-          <option value="nom DESC">Nom (Décroissant)</option>
-        </select>
-      </div>
+    <div className="min-h-screen bg-[#197277] text-white mt-5">
+      {/* Hero Section */}
+      <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative py-16 px-4">
+        <div className="container mx-auto text-center">
+          <motion.h1 initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-4xl md:text-6xl font-bold mb-8">
+            Nos Services
+          </motion.h1>
 
-      <div className="grid grid-cols-1 gap-4">
-        {services.length === 0 ? (
-          <p>Aucun service trouvé.</p>
-        ) : (
-          services.map((service: any) => (
-            <div
-              key={service.id}
-              className="card w-full max-w-sm bg-white shadow-md p-4"
+          <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-lg md:text-xl mb-12 text-white/90">
+            Découvrez notre gamme complète de services de streaming professionnel
+          </motion.p>
+
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="max-w-md mx-auto">
+            <select
+              className="w-full p-4 rounded-lg bg-white/10 backdrop-blur-sm text-white border border-white/20
+                         focus:outline-none focus:ring-2 focus:ring-white/30 transition-all appearance-none mb-4"
+              onChange={(e) => setOrderBy(e.target.value)}
+              value={orderBy}
             >
-              <h3 className="text-xl font-semibold">{service.nom}</h3>
-              <p>{service.description}</p>
-              <p className="text-sm text-gray-500">
-                Catégorie: {service.Photo}
-              </p>
-            </div>
-          ))
-        )}
-      </div>
+              <option value="Nom ASC" className="bg-[#197277] text-white">
+                Trier par
+              </option>
+              <option value="Nom ASC" className="bg-[#197277] text-white">
+                Nom (Croissant)
+              </option>
+              <option value="Nom DESC" className="bg-[#197277] text-white">
+                Nom (Décroissant)
+              </option>
+            </select>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* Services Grid */}
+      <motion.section variants={containerVariants} initial="hidden" animate="visible" className="py-16 px-6">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.length === 0 ? (
+              <div className="col-span-full text-center text-xl">Aucun service trouvé.</div>
+            ) : (
+              services.map((service) => (
+                <motion.div key={service.id} variants={itemVariants} whileHover={{ scale: 1.02, transition: { duration: 0.2 } }} className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20">
+                  <div className="p-6">
+                    <div className="aspect-video bg-white/5 rounded-lg mb-6 overflow-hidden">{service.Photo && <img src="/api/placeholder/400/300" alt={service.Nom} className="w-full h-full object-cover" />}</div>
+                    <h3 className="text-xl font-bold mb-3">{service.Nom}</h3>
+                    <div className="badge badge-accent">{service.categorie}</div>
+                    <p className="text-white/80 mb-6 min-h-[60px]">{service.description}</p>
+                    <button
+                      onClick={() => (window.location.href = `/service/${service.id}`)}
+                      className="w-full bg-white text-[#197277] font-semibold py-3 px-4 rounded-lg
+                               hover:bg-white/90 transition-colors duration-200"
+                    >
+                      En savoir plus
+                    </button>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </div>
+      </motion.section>
     </div>
   );
 };
