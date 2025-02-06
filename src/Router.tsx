@@ -4,7 +4,7 @@ import Connect from "./pages/Connect/Connect";
 import SignUp from "./pages/SignUp/SignUp";
 import App from "./App";
 import Service from "./pages/Service/Service.tsx";
-import AdminService from "@pages/admin/service_admin/AdminService.tsx";
+import AdminDashboard from "@pages/admin/service_admin/AdminDashboard.tsx";
 import Home from "@pages/Home/Home.tsx";
 import AuthGuard from "./providers/AuthGuard";
 
@@ -30,7 +30,15 @@ const router = createBrowserRouter([
     path: "/admin/create/service",
     element: (
       <AuthGuard>
-        <AdminService />
+        <AdminDashboard />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/admin",
+    element: (
+      <AuthGuard>
+        <AdminDashboard />
       </AuthGuard>
     ),
   },

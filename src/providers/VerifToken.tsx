@@ -10,7 +10,7 @@ export default async function verifyToken(): Promise<boolean> {
 
   try {
     const response = await axios.post(
-      "http://localhost:3000/verify-token",
+      "http://localhost:3000/verify-token", // Route sur ton backend pour vérifier le token
       {}, // Le corps est vide ici, car tu envoies le token dans les headers
       {
         headers: {

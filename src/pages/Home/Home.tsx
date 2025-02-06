@@ -15,12 +15,12 @@ export default function Home() {
 
           {/* Title */}
           <motion.h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-glow" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
-            Le futur du streaming commence ici.
+            Votre vision, Notre savoir-faire.
           </motion.h1>
 
           {/* Subtitle */}
           <motion.p className="text-lg md:text-xl max-w-2xl mt-4 opacity-80" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
-            Une plateforme rapide, sécurisée et optimisée pour une immersion totale.
+            Votre plateforme rapide, sécurisée et optimisée pour des échanges simplifiés.
           </motion.p>
 
           {/* CTA Buttons */}
