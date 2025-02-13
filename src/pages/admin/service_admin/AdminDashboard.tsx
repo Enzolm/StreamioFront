@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaSave } from "react-icons/fa";
+import { FaEdit, FaTrash, FaSave, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -8,7 +8,6 @@ interface Service {
   Nom: string;
   categorie: string;
   description: string;
-  Prix: number | null;
   Photo: string;
   Video: string | null;
 }
@@ -18,6 +17,12 @@ const AdminDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingService, setEditingService] = useState<number | null>(null);
   const [editedValues, setEditedValues] = useState<Partial<Service>>({});
+  const [showNewServiceForm, setShowNewServiceForm] = useState(false);
+  const [newService, setNewService] = useState<Partial<Service>>({
+    Nom: "",
+    categorie: "",
+    description: "",
+  });
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -40,75 +45,52 @@ const AdminDashboard: React.FC = () => {
     fetchServices();
   }, []);
 
-  const handleEdit = (id: number) => {
-    setEditingService(id);
-    const serviceToEdit = services.find((service) => service.Id_service === id);
-    if (serviceToEdit) {
-      setEditedValues(serviceToEdit);
+  const handleNewServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Service) => {
+    setNewService({ ...newService, [field]: e.target.value });
+  };
+
+  const handleCreateService = async () => {
+    console.log("Création du service:", newService);
+
+    // Vérification que tous les champs requis sont remplis
+    if (!newService.Nom || !newService.categorie || !newService.description === null) {
+      setError("Tous les champs doivent être remplis");
+      return;
     }
-  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Service) => {
-    setEditedValues({ ...editedValues, [field]: e.target.value });
-  };
-
-  const handleSave = async (id: number) => {
-    const token = localStorage.getItem("token"); // Récupère le token depuis le localStorage (ou un autre moyen)
-
+    const token = localStorage.getItem("token");
     if (!token) {
       setError("Jeton d'authentification manquant");
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/update/service/${id}`, {
-        method: "PUT",
+      const response = await fetch("http://localhost:3000/create/service", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Inclure le token JWT dans l'en-tête
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          service_titre: editedValues.Nom,
-          service_description: editedValues.description,
-          categorie: editedValues.categorie,
+          Nom: newService.Nom,
+          categorie: newService.categorie,
+          description: newService.description,
+          Photo: newService.Photo || "",
+          Video: newService.Video || "",
         }),
       });
 
       if (!response.ok) {
-        const errorMessage = await response.text(); // Récupère le message d'erreur du backend
+        const errorMessage = await response.text();
         throw new Error(errorMessage);
       }
 
-      setServices(services.map((service) => (service.Id_service === id ? { ...service, ...editedValues } : service)));
-      setEditingService(null);
+      const createdService = await response.json();
+      setServices([...services, createdService]);
+      setShowNewServiceForm(false);
+      setNewService({ Nom: "", categorie: "", description: "" });
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du service:", error);
-      setError(error instanceof Error ? error.message : "Une erreur inconnue s'est produite");
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    const token = localStorage.getItem("token"); // Assurer que le token est bien récupéré pour la suppression
-
-    if (!token) {
-      setError("Jeton d'authentification manquant");
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:3000/delete/service/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`, // Inclure le token JWT pour les requêtes sécurisées
-        },
-      });
-      if (!response.ok) {
-        const errorMessage = await response.text(); // Récupère le message d'erreur du backend
-        throw new Error(errorMessage);
-      }
-      setServices(services.filter((service) => service.Id_service !== id));
-    } catch (error) {
-      console.error("Erreur lors de la suppression du service:", error);
+      console.error("Erreur lors de la création du service:", error);
       setError(error instanceof Error ? error.message : "Une erreur inconnue s'est produite");
     }
   };
@@ -126,8 +108,29 @@ const AdminDashboard: React.FC = () => {
 
       <div className="flex-1 p-10">
         <h1 className="text-3xl font-bold mb-6 text-[#197277]">Gestion des Services</h1>
+
         <div className="bg-white p-6 rounded-lg shadow-md border border-[#197277]">
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-[#197277]">Liste des services</h2>
+            <button onClick={() => setShowNewServiceForm(!showNewServiceForm)} className="flex items-center space-x-2 px-4 py-2 bg-[#1B5E5F] text-white rounded-lg shadow-md hover:bg-[#14605E] transition">
+              <FaPlus />
+              <span>Nouveau Service</span>
+            </button>
+          </div>
+
+          {showNewServiceForm && (
+            <div className="bg-gray-100 p-4 rounded-lg mb-4">
+              <input type="text" placeholder="Nom du service" value={newService.Nom || ""} onChange={(e) => handleNewServiceChange(e, "Nom")} className="w-full p-2 border rounded-lg mb-2" />
+              <input type="text" placeholder="Catégorie" value={newService.categorie || ""} onChange={(e) => handleNewServiceChange(e, "categorie")} className="w-full p-2 border rounded-lg mb-2" />
+              <textarea placeholder="Description" value={newService.description || ""} onChange={(e) => handleNewServiceChange(e, "description")} className="w-full p-2 border rounded-lg mb-2" />
+              <button onClick={handleCreateService} className="w-full bg-[#197277] text-white p-2 rounded-lg hover:bg-[#164C4F] transition">
+                Créer
+              </button>
+            </div>
+          )}
+
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-[#197277] text-white">
@@ -147,20 +150,14 @@ const AdminDashboard: React.FC = () => {
               ) : (
                 services.map((service) => (
                   <tr key={service.Id_service} className="border">
-                    <td className="p-3 border">{editingService === service.Id_service ? <input type="text" value={editedValues.Nom || ""} onChange={(e) => handleChange(e, "Nom")} className="border p-2 w-full bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#197277]" /> : service.Nom}</td>
-                    <td className="p-3 border">{editingService === service.Id_service ? <input type="text" value={editedValues.categorie || ""} onChange={(e) => handleChange(e, "categorie")} className="border p-2 w-full bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#197277]" /> : service.categorie}</td>
-                    <td className="p-3 border">{editingService === service.Id_service ? <input type="text" value={editedValues.description || ""} onChange={(e) => handleChange(e, "description")} className="border p-2 w-full bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#197277]" /> : service.description}</td>
+                    <td className="p-3 border">{service.Nom}</td>
+                    <td className="p-3 border">{service.categorie}</td>
+                    <td className="p-3 border">{service.description}</td>
                     <td className="p-3 border flex space-x-3 justify-center">
-                      {editingService === service.Id_service ? (
-                        <button onClick={() => handleSave(service.Id_service)} className="text-green-500 hover:text-green-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300">
-                          <FaSave />
-                        </button>
-                      ) : (
-                        <button onClick={() => handleEdit(service.Id_service)} className="text-[#197277] hover:text-[#164C4F] p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#197277]">
-                          <FaEdit />
-                        </button>
-                      )}
-                      <button onClick={() => handleDelete(service.Id_service)} className="text-red-500 hover:text-red-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-300">
+                      <button className="text-[#197277] hover:text-[#164C4F] p-2 rounded-lg">
+                        <FaEdit />
+                      </button>
+                      <button className="text-red-500 hover:text-red-700 p-2 rounded-lg">
                         <FaTrash />
                       </button>
                     </td>
