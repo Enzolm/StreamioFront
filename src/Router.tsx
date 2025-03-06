@@ -7,6 +7,7 @@ import Service from "./pages/Service/Service.tsx";
 import AdminDashboard from "@pages/admin/service_admin/AdminDashboard.tsx";
 import Home from "@pages/Home/Home.tsx";
 import AuthGuard from "./providers/AuthGuard";
+import UserProfile from "./pages/UserPage/AccountManagement.tsx";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/service",
     element: <Service />,
+  },
+  {
+    path: "/account",
+    element: <UserProfile />,
   },
 
   {

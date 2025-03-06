@@ -108,7 +108,7 @@ const UserProfile: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login"; // Rediriger l'utilisateur vers la page de login
+    window.location.href = "/"; // Rediriger l'utilisateur vers la page de login
   };
 
   return (
