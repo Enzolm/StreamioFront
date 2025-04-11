@@ -17,6 +17,7 @@ const Service = () => {
 
   // Récupérer les services depuis l'API
   useEffect(() => {
+    console.log("orderBy", orderBy);
     const fetchServices = async () => {
       try {
         const response = await fetch(`http://localhost:3000/get/services?orderBy=${orderBy}`);

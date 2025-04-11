@@ -1,73 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { registerProps } from "./Register.types";
-import { motion } from "motion/react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { isGeneratorFunction } from "util/types";
-import "./register.css";
+import React, { useState } from "react";
 
-const Register: React.FC<registerProps> = ({
-  className,
-  isRegister,
-  setIsRegister,
-}) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+interface ToggleButtonProps {
+  initialState?: boolean;
+  onToggle: (value: boolean) => void;
+}
 
-  const RedirectSignUp = () => {
-    navigate("/signup");
-  };
-  const RedirectLogin = () => {
-    navigate("/login");
-  };
-  const [isSignup, setisSignup] = useState(location.pathname === "/login");
-  console.log("issignup", isSignup);
+const ToggleButton: React.FC<ToggleButtonProps> = ({ initialState = false, onToggle }) => {
+  const [isSignup, setIsSignup] = useState<boolean>(initialState);
 
-  const spring = {
-    type: "spring",
-    stiffness: 700,
-    damping: 30,
-    className: "left-0 rounded-l-lg",
+  const handleToggle = (value: boolean): void => {
+    setIsSignup(value);
+    onToggle(value);
   };
 
   return (
-    <>
-      <div className="loginsignup">
-        {/* <span
-          className={`absolute top-0 z-0  w-1/2 h-full transition-all bg-gray-300 pointer-events-none ${
-            isRegister ? "left-0 rounded-l-lg" : "left-1/2 rounded-r-lg"
-          }`} 
-        />*/}
-        <motion.span
-          className={`absolute top-0 z-0  w-1/2 h-full bg-gray-300 pointer-events-none rounded-lg`}
-          layout
-          transition={spring}
-        />
+    <div className="relative min-w-64 min-h-14 flex items-center justify-between bg-gray-900 rounded-xl p-1 overflow-hidden">
+      {/* Animated white bubble - adjusted for proper positioning */}
+      <div className={`absolute top-1 bottom-1 w-1/2 bg-white rounded-xl shadow-lg transition-all duration-300 ease-in-out ${isSignup ? "left-1/2 transform -translate-x-1" : "left-1"}`} />
 
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            RedirectLogin();
-          }}
-          className={`bg-transparent border z-10 border-gray-300 rounded-l-lg w-1/2 relative ${
-            isSignup ? "text-main" : "text-gray-300"
-          }`}
-        >
-          Sign in
+      {/* Container for buttons to ensure proper centering */}
+      <div className="w-full h-full flex items-center justify-between">
+        {/* Sign in */}
+        <button className={`bg-transparent w-1/2 z-10 h-full flex items-center justify-center text-base font-medium transition-colors duration-300 ${!isSignup ? "text-gray-900" : "text-gray-200"}`} onClick={(): void => handleToggle(false)}>
+          S'identifer
         </button>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            RedirectSignUp();
-          }}
-          className={`bg-transparent border border-gray-300 rounded-r-lg w-1/2 z-10 ${
-            isSignup ? "text-gray-300" : "text-main"
-          }`}
-        >
-          Sign up
+
+        {/* Sign up */}
+        <button className={`bg-transparent w-1/2 z-10 h-full flex items-center justify-center text-base font-medium transition-colors duration-300 ${isSignup ? "text-gray-900" : "text-gray-200"}`} onClick={(): void => handleToggle(true)}>
+          S'inscrire
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Register;
+export default ToggleButton;

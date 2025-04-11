@@ -3,35 +3,33 @@ import { FaEdit, FaTrash, FaSave, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-interface Service {
-  Id_service: number;
-  Nom: string;
-  categorie: string;
-  description: string;
-  Photo: string;
-  Video: string | null;
+interface Utilisateurs {
+  id: string;
+  nom: string;
+  prenom: string;
+  email: string;
 }
 
-const AdminDashboard: React.FC = () => {
-  const [services, setServices] = useState<Service[]>([]);
+const AdminUserDashboard: React.FC = () => {
+  const [services, setServices] = useState<Utilisateurs[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [editingService, setEditingService] = useState<number | null>(null);
-  const [editedValues, setEditedValues] = useState<Partial<Service>>({});
   const [showNewServiceForm, setShowNewServiceForm] = useState(false);
-  const [newService, setNewService] = useState<Partial<Service>>({
-    Nom: "",
-    categorie: "",
-    description: "",
+  const [newService, setNewService] = useState<Partial<Utilisateurs>>({
+    id: "",
+    nom: "",
+    prenom: "",
+    email: "",
   });
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch("http://localhost:3000/get/services");
+        const response = await fetch("http://localhost:3000/get/users");
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data: Service[] = await response.json();
+        const data: Utilisateurs[] = await response.json();
         if (!Array.isArray(data)) {
           throw new Error("Invalid data format received");
         }
@@ -45,15 +43,16 @@ const AdminDashboard: React.FC = () => {
     fetchServices();
   }, []);
 
-  const handleNewServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Service) => {
+  const handleNewServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Utilisateurs) => {
+    console.log("field", e.target.value);
     setNewService({ ...newService, [field]: e.target.value });
   };
 
   const handleCreateService = async () => {
-    console.log("Création du service:", newService);
+    console.log("Création du user:", newService);
 
     // Vérification que tous les champs requis sont remplis
-    if (!newService.Nom || !newService.categorie || !newService.description === null) {
+    if (!newService.nom || !newService.prenom || !newService.email === null) {
       setError("Tous les champs doivent être remplis");
       return;
     }
@@ -65,18 +64,16 @@ const AdminDashboard: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/create/service", {
+      const response = await fetch("http://localhost:3000/create/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          Nom: newService.Nom,
-          categorie: newService.categorie,
-          description: newService.description,
-          Photo: newService.Photo || "",
-          Video: newService.Video || "",
+          nom: newService.nom,
+          prenom: newService.prenom,
+          email: newService.email,
         }),
       });
 
@@ -88,9 +85,37 @@ const AdminDashboard: React.FC = () => {
       const createdService = await response.json();
       setServices([...services, createdService]);
       setShowNewServiceForm(false);
-      setNewService({ Nom: "", categorie: "", description: "" });
+      setNewService({ nom: "", prenom: "", email: "" });
     } catch (error) {
       console.error("Erreur lors de la création du service:", error);
+      setError(error instanceof Error ? error.message : "Une erreur inconnue s'est produite");
+    }
+  };
+
+  const handleDeleteUsers = async (id: string) => {
+    if (!id) {
+      alert("Vous devez être connecté pour supprimer un service.");
+      return;
+    }
+
+    try {
+      console.log("id", id);
+      const response = await fetch(`http://localhost:3000/delete/user/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const updatedServices = services.filter((service) => service.id !== id);
+        setServices(updatedServices);
+      } else {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression du service:", error);
       setError(error instanceof Error ? error.message : "Une erreur inconnue s'est produite");
     }
   };
@@ -104,12 +129,8 @@ const AdminDashboard: React.FC = () => {
         <Link to="/admin">
           <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Tableau de bord</button>
         </Link>
-        <Link to="/admin">
-          <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Services</button>
-        </Link>
-        <Link to="/admin/users/list">
-          <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Utilisateurs</button>
-        </Link>
+        <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Services</button>
+        <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Utilisateurs</button>
       </div>
 
       <div className="flex-1 p-10">
@@ -128,9 +149,9 @@ const AdminDashboard: React.FC = () => {
 
           {showNewServiceForm && (
             <div className="bg-gray-100 p-4 rounded-lg mb-4">
-              <input type="text" placeholder="Nom du service" value={newService.Nom || ""} onChange={(e) => handleNewServiceChange(e, "Nom")} className="w-full p-2 border rounded-lg mb-2" />
-              <input type="text" placeholder="Catégorie" value={newService.categorie || ""} onChange={(e) => handleNewServiceChange(e, "categorie")} className="w-full p-2 border rounded-lg mb-2" />
-              <textarea placeholder="Description" value={newService.description || ""} onChange={(e) => handleNewServiceChange(e, "description")} className="w-full p-2 border rounded-lg mb-2" />
+              <input type="text" placeholder="Nom" value={newService.nom || ""} onChange={(e) => handleNewServiceChange(e, "nom")} className="w-full p-2 border rounded-lg mb-2" />
+              <input type="text" placeholder="Prenom" value={newService.prenom || ""} onChange={(e) => handleNewServiceChange(e, "prenom")} className="w-full p-2 border rounded-lg mb-2" />
+              <textarea placeholder="email" value={newService.email || ""} onChange={(e) => handleNewServiceChange(e, "email")} className="w-full p-2 border rounded-lg mb-2" />
               <button onClick={handleCreateService} className="w-full bg-[#197277] text-white p-2 rounded-lg hover:bg-[#164C4F] transition">
                 Créer
               </button>
@@ -141,9 +162,8 @@ const AdminDashboard: React.FC = () => {
             <thead>
               <tr className="bg-[#197277] text-white">
                 <th className="p-3 border">Nom</th>
-                <th className="p-3 border">Catégorie</th>
-                <th className="p-3 border">Description</th>
-                <th className="p-3 border">Actions</th>
+                <th className="p-3 border">Prenom</th>
+                <th className="p-3 border">Email</th>
               </tr>
             </thead>
             <tbody>
@@ -155,16 +175,16 @@ const AdminDashboard: React.FC = () => {
                 </tr>
               ) : (
                 services.map((service) => (
-                  <tr key={service.Id_service} className="border">
-                    <td className="p-3 border">{service.Nom}</td>
-                    <td className="p-3 border">{service.categorie}</td>
-                    <td className="p-3 border">{service.description}</td>
+                  <tr key={service.email} className="border">
+                    <td className="p-3 border">{service.nom}</td>
+                    <td className="p-3 border">{service.prenom}</td>
+                    <td className="p-3 border">{service.email}</td>
                     <td className="p-3 border flex space-x-3 justify-center">
                       <button className="text-[#197277] hover:text-[#164C4F] p-2 rounded-lg">
                         <FaEdit />
                       </button>
                       <button className="text-red-500 hover:text-red-700 p-2 rounded-lg">
-                        <FaTrash />
+                        <FaTrash onClick={() => handleDeleteUsers(service.id)} />
                       </button>
                     </td>
                   </tr>
@@ -178,4 +198,4 @@ const AdminDashboard: React.FC = () => {
   );
 };
 
-export default AdminDashboard;
+export default AdminUserDashboard;

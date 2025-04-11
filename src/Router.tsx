@@ -1,13 +1,15 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Connect from "./pages/Connect/Connect";
-import SignUp from "./pages/SignUp/SignUp";
+// import SignUp from "./pages/Connect/Signup.tsx";
 import App from "./App";
 import Service from "./pages/Service/Service.tsx";
 import AdminDashboard from "@pages/admin/service_admin/AdminDashboard.tsx";
+import AdminUserDashboard from "@pages/admin/user_admin/UserAdminDashboard.tsx";
 import Home from "@pages/Home/Home.tsx";
 import AuthGuard from "./providers/AuthGuard";
 import UserProfile from "./pages/UserPage/AccountManagement.tsx";
+import ConnectMain from "./pages/Connect/connect-main.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,11 +18,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Connect />,
+    element: <ConnectMain />,
   },
   {
     path: "/signup",
-    element: <SignUp />,
+    element: <ConnectMain />,
   },
   {
     path: "/service",
@@ -36,6 +38,14 @@ const router = createBrowserRouter([
     element: (
       <AuthGuard>
         <AdminDashboard />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/admin/users/list",
+    element: (
+      <AuthGuard>
+        <AdminUserDashboard />
       </AuthGuard>
     ),
   },
