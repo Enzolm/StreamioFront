@@ -10,6 +10,7 @@ import Home from "@pages/Home/Home.tsx";
 import AuthGuard from "./providers/AuthGuard";
 import UserProfile from "./pages/UserPage/AccountManagement.tsx";
 import ConnectMain from "./pages/Connect/connect-main.tsx";
+import ServicePage from "@pages/Service/DetailService.tsx";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: "/account",
     element: <UserProfile />,
+  },
+  {
+    path: "/service/detail/:id",
+    element: <ServicePage />,
   },
 
   {
