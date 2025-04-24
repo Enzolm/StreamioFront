@@ -1,6 +1,7 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default async function verifyToken(): Promise<boolean> {
+async function verifyToken(): Promise<boolean> {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -40,3 +41,38 @@ export default async function verifyToken(): Promise<boolean> {
     return false;
   }
 }
+
+async function isAdmin(): Promise<boolean> {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    console.log("Payload:", payload);
+    return payload.isAdmin;
+  } catch (error) {
+    console.error("Error parsing token:", error);
+    return false;
+  }
+}
+
+async function isLogged(): Promise<boolean> {
+  const token = localStorage.getItem("token");
+  return !!token;
+}
+
+export function useLogout() {
+  const navigate = useNavigate();
+
+  return () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+}
+
+export const accountService = {
+  isLogged,
+  verifyToken,
+  useLogout,
+  isAdmin,
+};

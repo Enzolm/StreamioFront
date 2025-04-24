@@ -1,8 +1,9 @@
-// import React from "react";
+// import React rom "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "../../components";
 import { PlayCircle, Shield, Users } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export default function Home() {
   return (
@@ -11,7 +12,7 @@ export default function Home() {
       <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative h-screen bg-main flex items-center justify-center text-center px-4">
         <div className="container mx-auto flex flex-col items-center">
           {/* Logo */}
-          <motion.img src="/src/assets/logo.png" alt="Logo" className="w-40 mb-6 drop-shadow-lg" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} />
+          <motion.img src={logo} alt="Logo" className="w-40 mb-6 drop-shadow-lg" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} />
 
           {/* Title */}
           <motion.h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-glow" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}>

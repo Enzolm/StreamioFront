@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../../assets/logo.png";
+import logo from "@/assets/logo.png";
 import { ToggleButton } from "@components/index";
 import { Link } from "react-router-dom";
 import SignUp from "@pages/SignUp/SignUp";

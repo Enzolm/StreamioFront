@@ -1,13 +1,10 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import Connect from "./pages/Connect/Connect";
-// import SignUp from "./pages/Connect/Signup.tsx";
-// import App from "./App";
 import Service from "./pages/Service/Service.tsx";
 import AdminDashboard from "@pages/admin/service_admin/AdminDashboard.tsx";
 import AdminUserDashboard from "@pages/admin/user_admin/UserAdminDashboard.tsx";
 import Home from "@pages/Home/Home.tsx";
-import AuthGuard from "./providers/AuthGuard";
+import { AuthGuard, AdminGuard } from "./providers/AuthGuard";
 import UserProfile from "./pages/UserPage/AccountManagement.tsx";
 import ConnectMain from "./pages/Connect/connect-main.tsx";
 import ServicePage from "@pages/Service/DetailService.tsx";
@@ -41,25 +38,25 @@ const router = createBrowserRouter([
   {
     path: "/admin/create/service",
     element: (
-      <AuthGuard>
+      <AdminGuard>
         <AdminDashboard />
-      </AuthGuard>
+      </AdminGuard>
     ),
   },
   {
     path: "/admin/users/list",
     element: (
-      <AuthGuard>
+      <AdminGuard>
         <AdminUserDashboard />
-      </AuthGuard>
+      </AdminGuard>
     ),
   },
   {
     path: "/admin",
     element: (
-      <AuthGuard>
+      <AdminGuard>
         <AdminDashboard />
-      </AuthGuard>
+      </AdminGuard>
     ),
   },
 ]);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { accountService, useLogout } from "@/providers/VerifToken";
 
 interface Service {
   Id_service: number;
@@ -23,6 +24,7 @@ const AdminDashboard: React.FC = () => {
     categorie: "",
     description: "",
   });
+  const logout = useLogout();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -102,14 +104,26 @@ const AdminDashboard: React.FC = () => {
           <motion.img src="/src/assets/logo.png" alt="Logo" className="w-40 mb-6 drop-shadow-lg" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} />
         </Link>
         <Link to="/admin">
-          <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Tableau de bord</button>
-        </Link>
-        <Link to="/admin">
           <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Services</button>
         </Link>
         <Link to="/admin/users/list">
           <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Utilisateurs</button>
         </Link>
+        <button
+          onClick={() => {
+            logout();
+          }}
+        >
+          Se deconecter
+        </button>
+        <button
+          onClick={() => {
+            console.log("isAdmin", accountService.isAdmin());
+          }}
+          className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white"
+        >
+          IsAdmin?
+        </button>
       </div>
 
       <div className="flex-1 p-10">

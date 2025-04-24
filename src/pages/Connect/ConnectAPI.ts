@@ -29,7 +29,6 @@
 
 // export default CallLoginApi;
 
-import verifyToken from "../../providers/VerifToken";
 import axios from "axios";
 
 interface LoginResponse {
@@ -45,13 +44,6 @@ async function CallLoginApi(data: Record<string, any>): Promise<LoginResponse | 
     if (response.data && response.data.token) {
       console.log("Utilisateur connecté avec succès :", response.data.token);
       localStorage.setItem("token", response.data.token);
-
-      // Appel à verifyToken après avoir stocké le token
-      const isTokenValid = await verifyToken();
-      if (!isTokenValid) {
-        console.error("Le token est invalide après vérification.");
-        return null;
-      }
 
       return response.data;
     } else {

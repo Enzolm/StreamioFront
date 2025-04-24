@@ -1,4 +1,3 @@
-// import verifyToken from "../../../providers/VerifToken";
 import axios from "axios";
 
 async function CallCreateService(data: any) {
