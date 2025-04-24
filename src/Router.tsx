@@ -1,8 +1,8 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Connect from "./pages/Connect/Connect";
+// import Connect from "./pages/Connect/Connect";
 // import SignUp from "./pages/Connect/Signup.tsx";
-import App from "./App";
+// import App from "./App";
 import Service from "./pages/Service/Service.tsx";
 import AdminDashboard from "@pages/admin/service_admin/AdminDashboard.tsx";
 import AdminUserDashboard from "@pages/admin/user_admin/UserAdminDashboard.tsx";

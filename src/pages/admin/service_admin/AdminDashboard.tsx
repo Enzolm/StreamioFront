@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaSave, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -15,8 +15,8 @@ interface Service {
 const AdminDashboard: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [editingService, setEditingService] = useState<number | null>(null);
-  const [editedValues, setEditedValues] = useState<Partial<Service>>({});
+  // const [editingService, setEditingService] = useState<number | null>(null);
+  // const [editedValues, setEditedValues] = useState<Partial<Service>>({});
   const [showNewServiceForm, setShowNewServiceForm] = useState(false);
   const [newService, setNewService] = useState<Partial<Service>>({
     Nom: "",

@@ -1,15 +1,14 @@
 import React from "react";
-import { Button, Input, Register } from "@components/index";
+import { Button, Input } from "@components/index";
 import { useForm } from "react-hook-form";
-import { use } from "framer-motion/client";
+// import { use } from "framer-motion/client";
 import axios from "axios";
 
 const User: React.FC = () => {
   const {
     register,
     handleSubmit,
-    setError,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
 
   const onDelete = async (email: string) => {
@@ -32,16 +31,12 @@ const User: React.FC = () => {
       const token = localStorage.getItem("token"); // Récupérer le token JWT depuis localStorage (si besoin)
 
       // Effectuer la requête PUT pour mettre à jour l'utilisateur
-      const response = await axios.put(
-        "http://localhost:3000/update/user",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Envoyer le token dans les headers si nécessaire
-          },
-        }
-      );
+      const response = await axios.put("http://localhost:3000/update/user", data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Envoyer le token dans les headers si nécessaire
+        },
+      });
 
       // Afficher la réponse du serveur
       console.log("Utilisateur modifié avec succès:", response.data);
@@ -63,10 +58,7 @@ const User: React.FC = () => {
           <Input label=" mdp" {...register("motdepasse")} type="password" />
           <Button label="Se connecter" />
         </form>
-        <Button
-          onClick={() => onDelete("lemaireenzo91@gmail.com")}
-          label="Suprimer son compte"
-        />
+        <Button onClick={() => onDelete("lemaireenzo91@gmail.com")} label="Suprimer son compte" />
       </div>
     </>
   );

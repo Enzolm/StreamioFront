@@ -1,13 +1,10 @@
 import { useState } from "react";
 import logo from "../../assets/logo.png";
-import { motion as m } from "framer-motion";
-import { Button, Input, ToggleButton } from "@components/index";
-import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import CallLoginApi from "./ConnectAPI";
+import { ToggleButton } from "@components/index";
+import { Link } from "react-router-dom";
 import SignUp from "@pages/SignUp/SignUp";
-import { Sign } from "crypto";
 import Connect from "@pages/Connect/Connect";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function ConnectMain() {
   const [SelectedMethode, setSelectedMethode] = useState(true);
@@ -21,6 +18,7 @@ export default function ConnectMain() {
 
   return (
     <>
+      <Toaster />
       <div className={containerClasses}>
         <Link to="/">
           <img src={logo} className="animate-breathing w-32 h-auto max-w-xs mb-6 md:w-40 md:max-w-sm lg:w-48 lg:max-w-md xl:w-56 xl:max-w-lg" alt="Logo" />

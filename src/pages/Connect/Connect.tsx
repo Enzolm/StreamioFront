@@ -158,42 +158,66 @@
 
 //Version à jour
 
-import { useState } from "react";
-import logo from "../../assets/logo.png";
+// import { useState } from "react";
 import { motion as m } from "framer-motion";
-import { Button, Input, ToggleButton } from "@components/index";
-import { Link, useNavigate } from "react-router-dom";
+import { Button, Input } from "@components/index";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import CallLoginApi from "./ConnectAPI";
 
 export default function Connect() {
-  const [isRegister, setIsRegister] = useState(false);
+  // const [isRegister, setIsRegister] = useState(false);
 
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm();
+  } = useForm<{ email: string; motdepasse: string }>();
   const navigate = useNavigate();
 
-  const onSubmit = (data: any) => {
-    if (true) {
-      try {
-        CallLoginApi(data);
-        navigate("/service");
-      } catch (error) {
-        const err = error as Error;
-        setError("root", { message: "erreur", type: "custom" });
-      }
+  // const onSubmit = (data: any) => {
+  //   if (true) {
+  //     try {
+  //       CallLoginApi(data);
+  //       navigate("/service");
+  //     } catch (error) {
+  //       const err = error as Error;
+  //       setError("root", { message: "erreur", type: "custom" });
+  //     }
+  //   }
+  // };
+
+  async function handleLogin(data: { email: string; motdepasse: string }) {
+    // Vérification des champs requis
+    if (!data.email || !data.motdepasse) {
+      setError("root", {
+        message: "Veuillez remplir tous les champs",
+      });
+      return;
     }
-  };
+    try {
+      console.log("Données envoyées :", data.email, data.motdepasse);
+      const result = await CallLoginApi(data);
+      if (!result) {
+        console.error("Erreur lors de la connexion");
+        return;
+      }
+      console.log("Login successful:", result);
+      navigate("/service"); // Redirection vers la page de service après connexion réussie
+    } catch (error) {
+      setError("root", {
+        message: "Erreur lors de la connexion",
+      });
+    }
+  }
+
   return (
     <>
-      <form className={`flex flex-col transition-all duration-700 items-center overflow-hidden`} onSubmit={handleSubmit(onSubmit)}>
+      <form className={`flex flex-col transition-all duration-700 items-center overflow-hidden`} onSubmit={handleSubmit(handleLogin)}>
         <m.div className="flex flex-col ">
-          <Input {...register("email")} label="Entrez votre e-mail" type="email" />
-          <Input {...register("motdepasse")} label="Entrez votre mot de passe" type="password" />
+          <Input {...register("email", { required: "L'email est requis" })} label="Entrez votre e-mail" type="email" />
+          <Input {...register("motdepasse", { required: "Le mot de passe est obligatoire" })} label="Entrez votre mot de passe" type="password" />
           <Button label="Se connecter" />
           <div className="w-full my-5 h-0.2 bg-gray-400 "></div>
         </m.div>
