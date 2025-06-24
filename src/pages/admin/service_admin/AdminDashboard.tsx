@@ -3,9 +3,12 @@ import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { accountService, useLogout } from "@/providers/VerifToken";
+import { useNavigate } from "react-router-dom";
+import EditService from "./EditService";
+import { Dialog } from "@radix-ui/react-dialog";
 
 interface Service {
-  Id_service: number;
+  Id_service: string;
   Nom: string;
   categorie: string;
   description: string;
@@ -16,15 +19,16 @@ interface Service {
 const AdminDashboard: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [error, setError] = useState<string | null>(null);
-  // const [editingService, setEditingService] = useState<number | null>(null);
-  // const [editedValues, setEditedValues] = useState<Partial<Service>>({});
+  const [selectID, setSelectID] = useState<string>("");
+  const [OpenDialog, setOpenDialog] = useState(false);
   const [showNewServiceForm, setShowNewServiceForm] = useState(false);
   const [newService, setNewService] = useState<Partial<Service>>({
     Nom: "",
     categorie: "",
     description: "",
   });
-  const logout = useLogout();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -49,20 +53,51 @@ const AdminDashboard: React.FC = () => {
 
   const handleNewServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Service) => {
     setNewService({ ...newService, [field]: e.target.value });
+    console.log(`Champ ${field} mis à jour:`, e.target.value);
+  };
+
+  const handleDeleteService = async (id: string) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce service ?")) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Tokken d'authentification manquant");
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3000/delete/service/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      setServices(services.filter((service) => service.Id_service !== id));
+    } catch (error) {
+      console.error("Erreur lors de la suppression du service:", error);
+      setError(error instanceof Error ? error.message : "Une erreur inconnue s'est produite");
+    } finally {
+      setSelectID("");
+    }
   };
 
   const handleCreateService = async () => {
     console.log("Création du service:", newService);
-
+    console.log("Nouveau service:", newService.Nom, newService.categorie, newService.description);
     // Vérification que tous les champs requis sont remplis
-    if (!newService.Nom || !newService.categorie || !newService.description === null) {
+    if (!newService.Nom || !newService.categorie || !newService.description) {
       setError("Tous les champs doivent être remplis");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      setError("Jeton d'authentification manquant");
+      setError("Tokken d'authentification manquant");
       return;
     }
 
@@ -90,10 +125,11 @@ const AdminDashboard: React.FC = () => {
       const createdService = await response.json();
       setServices([...services, createdService]);
       setShowNewServiceForm(false);
-      setNewService({ Nom: "", categorie: "", description: "" });
     } catch (error) {
       console.error("Erreur lors de la création du service:", error);
       setError(error instanceof Error ? error.message : "Une erreur inconnue s'est produite");
+    } finally {
+      setNewService({ Nom: "", categorie: "", description: "" });
     }
   };
 
@@ -103,26 +139,14 @@ const AdminDashboard: React.FC = () => {
         <Link to="/">
           <motion.img src="/src/assets/logo.png" alt="Logo" className="w-40 mb-6 drop-shadow-lg" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} />
         </Link>
-        <Link to="/admin">
-          <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Services</button>
-        </Link>
-        <Link to="/admin/users/list">
-          <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Utilisateurs</button>
-        </Link>
-        <button
-          onClick={() => {
-            logout();
-          }}
-        >
-          Se deconecter
+        <button onClick={() => navigate("/admin")} className="w-full p-3 bg-[#113c3d] rounded-lg shadow-md  transition text-white">
+          Services
         </button>
-        <button
-          onClick={() => {
-            console.log("isAdmin", accountService.isAdmin());
-          }}
-          className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white"
-        >
-          IsAdmin?
+        <button onClick={() => navigate("/admin/users/list")} className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">
+          Utilisateurs
+        </button>
+        <button onClick={() => navigate("/admin/devis")} className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">
+          Devis
         </button>
       </div>
 
@@ -142,9 +166,9 @@ const AdminDashboard: React.FC = () => {
 
           {showNewServiceForm && (
             <div className="bg-gray-100 p-4 rounded-lg mb-4">
-              <input type="text" placeholder="Nom du service" value={newService.Nom || ""} onChange={(e) => handleNewServiceChange(e, "Nom")} className="w-full p-2 border rounded-lg mb-2" />
-              <input type="text" placeholder="Catégorie" value={newService.categorie || ""} onChange={(e) => handleNewServiceChange(e, "categorie")} className="w-full p-2 border rounded-lg mb-2" />
-              <textarea placeholder="Description" value={newService.description || ""} onChange={(e) => handleNewServiceChange(e, "description")} className="w-full p-2 border rounded-lg mb-2" />
+              <input type="text" placeholder="Nom du service" value={newService.Nom} onChange={(e) => handleNewServiceChange(e, "Nom")} className="w-full p-2 border rounded-lg mb-2" />
+              <input type="text" placeholder="Catégorie" value={newService.categorie} onChange={(e) => handleNewServiceChange(e, "categorie")} className="w-full p-2 border rounded-lg mb-2" />
+              <textarea placeholder="Description" value={newService.description} onChange={(e) => handleNewServiceChange(e, "description")} className="w-full p-2 border rounded-lg mb-2" />
               <button onClick={handleCreateService} className="w-full bg-[#197277] text-white p-2 rounded-lg hover:bg-[#164C4F] transition">
                 Créer
               </button>
@@ -174,10 +198,16 @@ const AdminDashboard: React.FC = () => {
                     <td className="p-3 border">{service.categorie}</td>
                     <td className="p-3 border">{service.description}</td>
                     <td className="p-3 border flex space-x-3 justify-center">
-                      <button className="text-[#197277] hover:text-[#164C4F] p-2 rounded-lg">
+                      <button
+                        onClick={() => {
+                          setSelectID(service.Id_service);
+                          setOpenDialog(true);
+                        }}
+                        className="text-[#197277] hover:text-[#164C4F] p-2 rounded-lg"
+                      >
                         <FaEdit />
                       </button>
-                      <button className="text-red-500 hover:text-red-700 p-2 rounded-lg">
+                      <button onClick={() => handleDeleteService(service.Id_service)} className="text-red-500 hover:text-red-700 p-2 rounded-lg">
                         <FaTrash />
                       </button>
                     </td>
@@ -186,6 +216,16 @@ const AdminDashboard: React.FC = () => {
               )}
             </tbody>
           </table>
+          <Dialog open={OpenDialog} onOpenChange={setOpenDialog}>
+            <EditService
+              id={selectID}
+              data={{
+                Nom: services.find((service) => service.Id_service === selectID)?.Nom || "",
+                categorie: services.find((service) => service.Id_service === selectID)?.categorie || "",
+                description: services.find((service) => service.Id_service === selectID)?.description || "",
+              }}
+            />
+          </Dialog>
         </div>
       </div>
     </div>

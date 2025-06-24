@@ -8,9 +8,10 @@ const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await accountService.isLogged();
-        console.log("result", result);
-        setIsAuthenticated(result);
+        await accountService.isLogged().then((res) => {
+          console.log("isLogged result:", res);
+          setIsAuthenticated(res);
+        });
       } catch (error) {
         console.error("Erreur lors de la vérification du token :", error);
         setIsAuthenticated(false);

@@ -5,9 +5,11 @@ import AdminDashboard from "@pages/admin/service_admin/AdminDashboard.tsx";
 import AdminUserDashboard from "@pages/admin/user_admin/UserAdminDashboard.tsx";
 import Home from "@pages/Home/Home.tsx";
 import { AuthGuard, AdminGuard } from "./providers/AuthGuard";
-import UserProfile from "./pages/UserPage/AccountManagement.tsx";
+import UserMainPage from "./pages/UserPage/Main.tsx";
 import ConnectMain from "./pages/Connect/connect-main.tsx";
 import ServicePage from "@pages/Service/DetailService.tsx";
+import DevisPage from "@pages/admin/service_admin/Devis.tsx";
+import DevisCreatorPage from "@pages/admin/service_admin/DevisCreator.tsx";
 
 const router = createBrowserRouter([
   {
@@ -28,7 +30,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/account",
-    element: <UserProfile />,
+    element: <UserMainPage />,
   },
   {
     path: "/service/detail/:id",
@@ -56,6 +58,22 @@ const router = createBrowserRouter([
     element: (
       <AdminGuard>
         <AdminDashboard />
+      </AdminGuard>
+    ),
+  },
+  {
+    path: "/admin/devis/creator",
+    element: (
+      <AdminGuard>
+        <DevisCreatorPage />
+      </AdminGuard>
+    ),
+  },
+  {
+    path: "/admin/devis",
+    element: (
+      <AdminGuard>
+        <DevisPage />
       </AdminGuard>
     ),
   },

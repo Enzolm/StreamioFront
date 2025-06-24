@@ -21,17 +21,8 @@ async function verifyToken(): Promise<boolean> {
       }
     );
 
-    const isAdmin = response.data.isAdmin;
-
     console.log(response.data);
-
-    if (isAdmin) {
-      console.log("Token is valid and user is admin");
-      return true;
-    } else {
-      console.log("Token is valid but user is not admin");
-      return false;
-    }
+    return true;
   } catch (error: any) {
     if (error.response) {
       console.error("Error verifying token:", error.response.status, error.response.data);
@@ -49,7 +40,12 @@ async function isAdmin(): Promise<boolean> {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     console.log("Payload:", payload);
-    return payload.isAdmin;
+    // Vérifie si isAdmin est strictement égal à 1
+    if (payload.isAdmin === 1) {
+      return true;
+    } else {
+      return false;
+    }
   } catch (error) {
     console.error("Error parsing token:", error);
     return false;

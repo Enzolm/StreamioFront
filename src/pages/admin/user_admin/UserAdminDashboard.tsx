@@ -2,12 +2,17 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import EditUser from "./EditUser";
+import { Dialog } from "@radix-ui/react-dialog";
 
 interface Utilisateurs {
   id: string;
   nom: string;
   prenom: string;
   email: string;
+  admin?: number;
+  isEmployee?: number;
 }
 
 const AdminUserDashboard: React.FC = () => {
@@ -15,6 +20,8 @@ const AdminUserDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   // const [editingService, setEditingService] = useState<number | null>(null);
   const [showNewServiceForm, setShowNewServiceForm] = useState(false);
+  const [selectID, setSelectID] = useState<string>("");
+  const [OpenDialog, setOpenDialog] = useState(false);
   const [newService, setNewService] = useState<Partial<Utilisateurs>>({
     id: "",
     nom: "",
@@ -42,6 +49,8 @@ const AdminUserDashboard: React.FC = () => {
 
     fetchServices();
   }, []);
+
+  const navigate = useNavigate();
 
   const handleNewServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Utilisateurs) => {
     console.log("field", e.target.value);
@@ -120,21 +129,56 @@ const AdminUserDashboard: React.FC = () => {
     }
   };
 
+  // const handleEditUsers = async (id: string, Nom: string, Prenom: string, Email: string, admin: number, employe: number) => {
+  //   console.log("Édition de l'utilisateur:", { id, Nom, Prenom, Email, admin, employe });
+
+  //   try {
+  //     const response = await fetch(`http://localhost:3000/update/user/${id}`, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         nom: Nom,
+  //         prenom: Prenom,
+  //         email: Email,
+  //         admin: admin,
+  //         isEmployee: employe,
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorMessage = await response.text();
+  //       throw new Error(errorMessage);
+  //     }
+
+  //     const updatedUser = await response.json();
+  //     setServices((prevServices) => prevServices.map((service) => (service.id === id ? updatedUser : service)));
+  //   } catch (error) {
+  //     console.error("Erreur lors de l'édition de l'utilisateur:", error);
+  //     setError(error instanceof Error ? error.message : "Une erreur inconnue s'est produite");
+  //   }
+  // };
+
   return (
     <div className="flex min-h-screen bg-[#164C4F]">
       <div className="w-64 p-5 bg-[#197277] shadow-inner rounded-r-xl flex flex-col items-start space-y-4">
         <Link to="/">
           <motion.img src="/src/assets/logo.png" alt="Logo" className="w-40 mb-6 drop-shadow-lg" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} />
         </Link>
-        <Link to="/admin">
-          <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Tableau de bord</button>
-        </Link>
-        <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Services</button>
-        <button className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">Utilisateurs</button>
+        <button onClick={() => navigate("/admin")} className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">
+          Services
+        </button>
+        <button onClick={() => navigate("/admin/users/list")} className="w-full p-3 bg-[#113c3d] rounded-lg shadow-md  transition text-white">
+          Utilisateurs
+        </button>
+        <button onClick={() => navigate("/admin/devis")} className="w-full p-3 bg-[#1B5E5F] rounded-lg shadow-md hover:bg-[#14605E] transition text-white">
+          Devis
+        </button>
       </div>
 
       <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold mb-6 text-[#197277]">Gestion des Services</h1>
+        <h1 className="text-3xl font-bold mb-6 text-[#197277]">Gestion des Utilisteurs</h1>
 
         <div className="bg-white p-6 rounded-lg shadow-md border border-[#197277]">
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
@@ -143,7 +187,7 @@ const AdminUserDashboard: React.FC = () => {
             <h2 className="text-xl font-semibold text-[#197277]">Liste des services</h2>
             <button onClick={() => setShowNewServiceForm(!showNewServiceForm)} className="flex items-center space-x-2 px-4 py-2 bg-[#1B5E5F] text-white rounded-lg shadow-md hover:bg-[#14605E] transition">
               <FaPlus />
-              <span>Nouveau Service</span>
+              <span>Nouvel Utilisateur</span>
             </button>
           </div>
 
@@ -164,6 +208,7 @@ const AdminUserDashboard: React.FC = () => {
                 <th className="p-3 border">Nom</th>
                 <th className="p-3 border">Prenom</th>
                 <th className="p-3 border">Email</th>
+                <th className="p-3 border">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -180,7 +225,13 @@ const AdminUserDashboard: React.FC = () => {
                     <td className="p-3 border">{service.prenom}</td>
                     <td className="p-3 border">{service.email}</td>
                     <td className="p-3 border flex space-x-3 justify-center">
-                      <button className="text-[#197277] hover:text-[#164C4F] p-2 rounded-lg">
+                      <button
+                        onClick={() => {
+                          setSelectID(service.id);
+                          setOpenDialog(true);
+                        }}
+                        className="text-[#197277] hover:text-[#164C4F] p-2 rounded-lg"
+                      >
                         <FaEdit />
                       </button>
                       <button className="text-red-500 hover:text-red-700 p-2 rounded-lg">
@@ -192,6 +243,18 @@ const AdminUserDashboard: React.FC = () => {
               )}
             </tbody>
           </table>
+          <Dialog open={OpenDialog} onOpenChange={setOpenDialog}>
+            <EditUser
+              id={selectID}
+              data={{
+                email: services.find((service) => service.id === selectID)?.email || "",
+                nom: services.find((service) => service.id === selectID)?.nom || "",
+                prenom: services.find((service) => service.id === selectID)?.prenom || "",
+                isAdmin: services.find((service) => service.id === selectID)?.admin ?? 0,
+                isEmployee: services.find((service) => service.id === selectID)?.isEmployee ?? 0,
+              }}
+            />
+          </Dialog>
         </div>
       </div>
     </div>
